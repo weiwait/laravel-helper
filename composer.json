@@ -1,0 +1,23 @@
+{
+    "name": "weiwait/laravel-helper",
+    "description": "laravel开发辅助",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "weiwait",
+            "email": "mail@weiwait.cn"
+        }
+    ],
+    "require": {
+        "php": "^7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Weiwait\\Helper\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    }
+}
