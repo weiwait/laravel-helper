@@ -27,7 +27,7 @@ class Tools
             return $item;
         });
 
-        $content = implode($contentArray->toArray(), "\n");
+        $content = implode("\n", $contentArray->toArray());
 
         $content .= "\n";
         if ($data) {
