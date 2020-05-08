@@ -1,6 +1,6 @@
 <?php
 
-namespace Weiwait\Helper\Tools;
+namespace Weiwait\Helper;
 
 
 use Illuminate\Support\Facades\Artisan;
@@ -55,5 +55,51 @@ class Tools
             return Storage::disk()->url($image);
         });
         return $images->toArray();
+    }
+
+    /**
+     * 将数字索引转换为Excel字母索引
+     *
+     * @param $num
+     * @return string
+     */
+    public static function numToExcelChr(int $num): string
+    {
+        $front = '';
+        $floor = floor($num / 26);
+
+        if ($floor > 0) {
+            $front = self::numToExcelChr($floor - 1);
+            $num = $num % 26;
+        }
+
+        $last = chr(65 + $num);
+
+        return $front . $last;
+    }
+
+    /**
+     * 将字母索引转换为数字索引
+     *
+     * @param string $chr
+     * @return int
+     */
+    public static function excelChrToNum(string $chr): int
+    {
+        $chr = array_reverse(str_split($chr));
+
+        $num = 0;
+        foreach ($chr as $key => $item) {
+
+            if ($key > 0) {
+                $ord = ord($item) - 64;
+                $pos = pow(26, $key);
+                $num += $ord * $pos;
+            } else {
+                $num += ord($item) - 65;
+            }
+        }
+
+        return $num;
     }
 }
