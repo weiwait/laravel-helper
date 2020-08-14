@@ -4,7 +4,9 @@ namespace Weiwait\Helper;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Router;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -14,11 +16,9 @@ trait ExceptionHandlerRender
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $e
-     * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Throwable
+     * @param \Illuminate\Http\Request $request
+     * @param Throwable $exception
+     * @return JsonResponse|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Throwable $exception)
     {
@@ -26,6 +26,10 @@ trait ExceptionHandlerRender
             return Router::toResponse($request, $response);
         } elseif ($exception instanceof Responsable) {
             return $exception->toResponse($request);
+        }
+
+        if ($exception instanceof ModelNotFoundException) {
+            return $this->modelNotFound($request, $exception);
         }
 
         $exception = parent::prepareException($exception);
@@ -36,8 +40,6 @@ trait ExceptionHandlerRender
             return $this->unauthenticated($request, $exception);
         } elseif ($exception instanceof ValidationException) {
             return $this->convertValidationExceptionToResponse($exception, $request);
-        } elseif ($exception instanceof ModelNotFoundException) {
-            return $this->modelNotFound($request, $exception);
         }
 
         return $request->expectsJson()
@@ -58,7 +60,7 @@ trait ExceptionHandlerRender
         );
     }
 
-    function invalidJson($request, ValidationException $exception)
+    protected function invalidJson($request, ValidationException $exception)
     {
         return response()->json([
             'message' => '存在不正确的参数',
@@ -79,7 +81,7 @@ trait ExceptionHandlerRender
             : redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 
-    private function modelNotFound(\Illuminate\Http\Request $request, Throwable $exception)
+    protected function modelNotFound(\Illuminate\Http\Request $request, Throwable $exception)
     {
         return response()->json([
             'message' => '查找的资源不存在',
