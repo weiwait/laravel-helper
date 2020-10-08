@@ -85,7 +85,6 @@ trait ExceptionHandlerRender
     {
         return response()->json([
             'message' => '查找的资源不存在',
-            'errors' => $exception->errors(),
             'code' => $exception->getCode(),
             'status' => 404,
         ], 200);
