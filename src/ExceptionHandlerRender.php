@@ -63,7 +63,7 @@ trait ExceptionHandlerRender
     protected function invalidJson($request, ValidationException $exception)
     {
         return response()->json([
-            'message' => '存在不正确的参数',
+            'message' => current(current($exception->errors())),
             'errors' => $exception->errors(),
             'code' => $exception->getCode(),
             'status' => 422,

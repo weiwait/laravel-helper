@@ -1,10 +1,9 @@
 <?php
 
 use \Illuminate\Http\JsonResponse;
-use App\User;
 
 /*
- * @return User | null
+ * @return App\User | App\Models\User | null
  * */
 function authUser() {
     return \Illuminate\Support\Facades\Auth::user();
