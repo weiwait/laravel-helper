@@ -42,6 +42,7 @@ class Tools
 
         if (file_exists(app()->getCachedConfigPath())) {
             Artisan::call('config:cache');
+            @opcache_invalidate(app()->getCachedConfigPath());
         }
     }
 
