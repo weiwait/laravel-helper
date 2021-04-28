@@ -3,7 +3,7 @@
 use \Illuminate\Http\JsonResponse;
 
 /*
- * @return App\User | App\Models\User | null
+ * @return \App\User | \App\Models\User | null
  * */
 function authUser() {
     return \Illuminate\Support\Facades\Auth::user();
