@@ -31,6 +31,10 @@ function success($data, int $code = 2, int $status = 200, $jsonOption = JSON_UNE
         $data = [];
     }
 
+    if ($data instanceof \Illuminate\Http\Resources\Json\JsonResource) {
+        $data = $data->toResponse(request())->getData();
+    }
+
     return response()->json([
         'data' => $data,
         'code' => $code,
