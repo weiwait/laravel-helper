@@ -1,13 +1,16 @@
 <?php
 
 use \Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\VarDumper\VarDumper;
 
 /*
  * @return \App\Models\User | \App\User | null
  * */
 function authUser() {
-    return \Illuminate\Support\Facades\Auth::user();
+    return Auth::user();
 }
 
 function message(string $message, int $code = 1, int $status = 200, $jsonOption = JSON_UNESCAPED_UNICODE): JsonResponse {
@@ -31,8 +34,18 @@ function success($data, int $code = 2, int $status = 200, $jsonOption = JSON_UNE
         $data = [];
     }
 
-    if ($data instanceof \Illuminate\Http\Resources\Json\JsonResource) {
-        $data = $data->toResponse(request())->getData();
+    if ($data instanceof JsonResource) {
+        $data = $data->resource;
+
+        if ($data instanceof  AbstractPaginator) {
+            $data = $data->toArray();
+
+            return response()->json([
+                ...$data,
+                'code' => $code,
+                'status' => $status,
+            ], 200, [], $jsonOption);
+        }
     }
 
     return response()->json([

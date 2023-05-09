@@ -47,12 +47,19 @@ trait ExceptionHandlerRender
             : parent::prepareResponse($request, $exception);
     }
 
-    protected function prepareJsonResponse($request, Throwable $e)
+    protected function prepareJsonResponse($request, Throwable $e): JsonResponse
     {
+        $extra = [];
+
+        if (app()->hasDebugModeEnabled()) {
+            $extra['trace'] = $e->getTrace();
+        }
+
         return new JsonResponse([
             'message' => $e->getMessage(),
             'code' => $e->getCode(),
             'status' => $this->isHttpException($e) ? $e->getStatusCode() : 500,
+            ...$extra,
         ],
             200,
             $this->isHttpException($e) ? $e->getHeaders() : [],
@@ -60,28 +67,28 @@ trait ExceptionHandlerRender
         );
     }
 
-    protected function invalidJson($request, ValidationException $exception)
+    protected function invalidJson($request, ValidationException $exception): JsonResponse
     {
         return response()->json([
             'message' => current(current($exception->errors())),
             'errors' => $exception->errors(),
             'code' => $exception->getCode(),
             'status' => 422,
-        ], 200);
+        ]);
     }
 
-    protected function unauthenticated($request, AuthenticationException $exception)
+    protected function unauthenticated($request, AuthenticationException $exception): JsonResponse|\Illuminate\Http\RedirectResponse
     {
         return $request->expectsJson()
             ? response()->json([
                 'message' => '尚未认证',
                 'code' => $exception->getCode(),
                 'status' => 401,
-            ], 200)
+            ])
             : redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 
-    protected function modelNotFound(\Illuminate\Http\Request $request, Throwable $exception)
+    protected function modelNotFound(\Illuminate\Http\Request $request, Throwable $exception): JsonResponse
     {
         return response()->json([
             'message' => '查找的资源不存在',
