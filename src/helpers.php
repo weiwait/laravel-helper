@@ -35,13 +35,9 @@ function success($data, int $code = 2, int $status = 200, $jsonOption = JSON_UNE
     }
 
     if ($data instanceof JsonResource) {
-        $data = $data->resource;
-
-        if ($data instanceof  AbstractPaginator) {
-            $data = $data->toArray();
-
+        if ($data->resource instanceof  AbstractPaginator) {
             return response()->json([
-                ...$data,
+                ...$data->resource->toArray(),
                 'code' => $code,
                 'status' => $status,
             ], 200, [], $jsonOption);

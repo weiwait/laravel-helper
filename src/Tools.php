@@ -103,4 +103,13 @@ class Tools
 
         return $num;
     }
+
+    public static function imageUrl(string|null $path, $disk = null): string
+    {
+        if (!empty($path)) {
+            return Storage::disk($disk)->url($path);
+        }
+
+        return '';
+    }
 }
