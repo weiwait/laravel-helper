@@ -44,6 +44,14 @@ function success($data, int $code = 2, int $status = 200, $jsonOption = JSON_UNE
         }
     }
 
+    if ($data instanceof  AbstractPaginator) {
+        return response()->json([
+            ...$data->toArray(),
+            'code' => $code,
+            'status' => $status,
+        ], 200, [], $jsonOption);
+    }
+
     return response()->json([
         'data' => $data,
         'code' => $code,
